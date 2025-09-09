@@ -64,29 +64,6 @@ class AudioPreprocessor(WavTransform):
         logger.success("Silences removed, cleaned audio generated.")
         return cleaned_audio
 
-    # async def diarization(self, original_audio: AudioSegment) -> list[str] | None:
-    #     diarization_result: Pipeline = self.pipeline(self.wav_path)
-    #
-    #     ordered_segments: list = []
-    #     for turn, _, speaker in diarization_result.itertracks(yield_label=True):
-    #         start_ms: int = int(turn.start * 1000)
-    #         end_ms: int = int(turn.end * 1000)
-    #         segment: AudioSegment = original_audio[start_ms:end_ms]
-    #         ordered_segments.append((start_ms, speaker, segment))
-    #         logger.debug(f"Added segment for {speaker}: {start_ms}ms - {end_ms}ms")
-    #
-    #     ordered_segments.sort(key=lambda x: x[0])  # Sort by start time
-    #
-    #     output_dir: Path = Path("did_api/data/diarized_segments")
-    #     output_dir.mkdir(parents=True, exist_ok=True)
-    #
-    #     for i, (start_ms, speaker, segment) in enumerate(ordered_segments):
-    #         filename: Path = output_dir / f"{i:04d}_{speaker}.wav"
-    #         segment.export(filename, format="wav")
-    #         logger.success(f"Exported: {filename}")
-    #
-    #     return ordered_segments
-
     async def diarization(self, original_audio: AudioSegment) -> list[str] | None:
         diarization_result: Pipeline = self.pipeline(self.wav_path)
 
@@ -100,11 +77,6 @@ class AudioPreprocessor(WavTransform):
 
         ordered_segments.sort(key=lambda x: x[0])
         return ordered_segments
-
-    # async def run(self) -> None:
-    #     audio_data: AudioSegment | None = await self.load_audio()
-    #     cleaned_audio: AudioSegment | None = await self.delete_silent_part(audio_data)
-    #     await self.diarization(cleaned_audio)
 
     async def run(self) -> list | None:
         # Step 1: Convert M4A to WAV
